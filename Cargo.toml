@@ -1,7 +1,11 @@
 [package]
 name = "is-photo"
 version = "0.1.0"
+authors = ["novacrazy <novacrazy@gmail.com>"]
 edition = "2021"
+license = "MIT OR Apache-2.0"
+include = ["src/**/*", "LICENSE-*", "README.md"]
+readme = "README.md"
 
 [dependencies]
 easyfft = "0.4.1"
