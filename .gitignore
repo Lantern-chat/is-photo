@@ -1,0 +1,5 @@
+/target
+/data
+analysis.csv
+Cargo.lock
+.~lock.*

@@ -1,0 +1,13 @@
+[package]
+name = "is-photo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+easyfft = "0.4.1"
+image = { version = "0.25", default-features = false }
+
+[dev-dependencies]
+image = { version = "0.25", default-features = true }
+rand = "0.8.5"
+rayon = "1.10.0"
