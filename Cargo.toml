@@ -6,6 +6,10 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 include = ["src/**/*", "LICENSE-*", "README.md"]
 readme = "README.md"
+description = "Utility to determine if an image is likely a photograph or a 2D graphic"
+repository = "https://github.com/Lantern-chat/is-photo"
+keywords = ["image", "photo", "photograph", "graphic", "2d", "classification"]
+categories = ["no-std", "science", "computer-vision"]
 
 [dependencies]
 easyfft = "0.4.1"
@@ -15,3 +19,8 @@ image = { version = "0.25", default-features = false }
 image = { version = "0.25", default-features = true }
 rand = "0.8.5"
 rayon = "1.10.0"
+
+[profile.release]
+opt-level = 3
+lto = 'fat'
+codegen-units = 1

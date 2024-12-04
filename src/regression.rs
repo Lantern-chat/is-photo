@@ -1,3 +1,5 @@
+//! Logistic Regression model for classification and training
+
 use crate::Analysis;
 
 const NUM_FEATURES: usize = 14;
@@ -36,9 +38,9 @@ impl RegressionModel {
             a.rg_cov,
             a.gb_cov,
             a.br_cov,
-            a.mean,
+            a.spectral_mean,
             a.entropy,
-            a.variance.sqrt(), // standard deviation
+            a.spectral_variance.sqrt(), // standard deviation
             a.low_energy,
             a.high_energy,
             a.spectral_energy_ratio,

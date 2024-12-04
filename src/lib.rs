@@ -5,6 +5,8 @@ pub mod regression;
 
 use regression::RegressionModel;
 
+/// Pre-trained regression model with about 94% accuracy on my test set
+/// of 1500 images.
 pub const STANDARD_MODEL: RegressionModel = RegressionModel {
     weights: [
         -0.08685173,
@@ -27,6 +29,8 @@ pub const STANDARD_MODEL: RegressionModel = RegressionModel {
     lambda: 0.01,
 };
 
+/// Image analysis results, most of which are used as features for the regression model
+/// to classify images as photos or vectors.
 #[derive(Debug)]
 pub struct Analysis {
     /// Red-Green Covariance
@@ -35,43 +39,61 @@ pub struct Analysis {
     pub gb_cov: f32,
     /// Blue-Red Covariance
     pub br_cov: f32,
-    pub mean: f32,
-    pub mean_square: f32,
-    pub variance: f32,
+    /// Image histogram entropy
     pub entropy: f32,
     //pub edginess: f32,
+    /// Low frequency energy
     pub low_energy: f32,
+    /// High frequency energy
     pub high_energy: f32,
+    /// Ratio of low to high frequency energy
     pub spectral_energy_ratio: f32,
+    /// Mean spectral energy
+    pub spectral_mean: f32,
+    pub spectral_mean_square: f32,
+    /// Image spectral variance
+    pub spectral_variance: f32,
+    /// Skewness of the spectral energy distribution
     pub spectral_skewness: f32,
+    /// Kurtosis of the spectral energy distribution
     pub spectral_kurtosis: f32,
+    /// Amplitude of the peak frequency
     pub peak_amplitude: f32,
+    /// Frequency of the peak amplitude, biased towards higher frequencies
     pub peak_frequency: u8,
+    /// Ratio of peak amplitude to mean amplitude
     pub peak_to_avg_ratio: f32,
 }
 
 impl Analysis {
     pub fn std_dev(&self) -> f32 {
-        self.variance.sqrt()
+        self.spectral_variance.sqrt()
     }
 
+    /// Returns the raw probability that the image is a vector image.
+    pub fn raw_is_vector(&self, model: &RegressionModel) -> f32 {
+        // almost always a vector image
+        if self.peak_frequency > 24 || self.spectral_kurtosis < 0.0 || self.spectral_skewness < 0.0
+        {
+            return 1.0;
+        }
+
+        model.predict(self)
+    }
+
+    /// Returns the raw probability that the image is a photo.
+    pub fn raw_is_photo(&self, model: &RegressionModel) -> f32 {
+        1.0 - self.raw_is_vector(model).min(1.0)
+    }
+
+    /// Returns true if the image is likely a photo, false if it's likely a vector.
     pub fn is_photo(&self, model: &RegressionModel) -> bool {
         !self.is_vector(model)
     }
 
+    /// Returns true if the image is likely a vector, false if it's likely a photo.
     pub fn is_vector(&self, model: &RegressionModel) -> bool {
-        // basically never a vector image
-        if self.spectral_kurtosis > 50.0 {
-            return false;
-        }
-
-        // almost always a vector image
-        if self.peak_frequency > 24 || self.spectral_kurtosis < 0.0 || self.spectral_skewness < 0.0
-        {
-            return true;
-        }
-
-        model.predict(self) > 0.5
+        self.raw_is_vector(model) > 0.5
     }
 }
 
@@ -136,6 +158,9 @@ fn luma([r, g, b]: [f32; 3]) -> f32 {
     0.072169 * b
 }
 
+/// Analyze an image and return the results.
+///
+/// Returns `None` if the image is too small to analyze.
 pub fn analyze<I, P>(img: &I) -> Option<Analysis>
 where
     I: GenericImageView<Pixel = P>,
@@ -253,9 +278,9 @@ where
         rg_cov,
         gb_cov,
         br_cov,
-        mean,
-        mean_square: m2,
-        variance,
+        spectral_mean: mean,
+        spectral_mean_square: m2,
+        spectral_variance: variance,
         entropy,
         //edginess,
         low_energy: low_sum * inverse_n,
