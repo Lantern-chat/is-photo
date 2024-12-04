@@ -8,7 +8,7 @@ include = ["src/**/*", "LICENSE-*", "README.md"]
 readme = "README.md"
 description = "Utility to determine if an image is likely a photograph or a 2D graphic"
 repository = "https://github.com/Lantern-chat/is-photo"
-keywords = ["image", "photo", "photograph", "graphic", "2d", "classification"]
+keywords = ["image", "photograph", "graphic", "vector", "classification"]
 categories = ["no-std", "science", "computer-vision"]
 
 [dependencies]
