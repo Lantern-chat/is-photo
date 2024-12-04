@@ -71,7 +71,7 @@ impl RegressionModel {
         let lr = self.lr as f64;
         let lambda = self.lambda as f64;
 
-        for i in 0..iterations {
+        for _ in 0..iterations {
             let mut weight_gradients = [0.0; NUM_FEATURES];
             let mut bias_gradient = 0.0;
 
@@ -108,8 +108,7 @@ impl RegressionModel {
             bias -= lr * bias_gradient * inverse_n;
 
             if bias == old_bias && old_weights == weights {
-                println!("Converged after {i} iterations");
-
+                // println!("Converged after {i} iterations");
                 break;
             }
         }
